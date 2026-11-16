@@ -1,0 +1,17 @@
+{
+  "name": "相遇图鉴",
+  "short_name": "相遇图鉴",
+  "description": "把日常里遇到的宝可梦拍下来，收进自己的图鉴。",
+  "lang": "zh-CN",
+  "start_url": "./",
+  "scope": "./",
+  "display": "standalone",
+  "orientation": "portrait",
+  "background_color": "#f4c531",
+  "theme_color": "#0d111b",
+  "icons": [
+    { "src": "icon-192.png", "sizes": "192x192", "type": "image/png" },
+    { "src": "icon-512.png", "sizes": "512x512", "type": "image/png" },
+    { "src": "icon-maskable-512.png", "sizes": "512x512", "type": "image/png", "purpose": "maskable" }
+  ]
+}

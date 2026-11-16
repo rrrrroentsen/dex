@@ -1,0 +1,61 @@
+<!doctype html>
+<html lang="zh-CN">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
+<meta http-equiv="Content-Security-Policy" content="default-src 'self'; script-src 'self' 'wasm-unsafe-eval'; style-src 'self' 'unsafe-inline'; img-src 'self' data: blob: https://raw.githubusercontent.com; media-src 'self' blob: mediastream:; connect-src 'self'; worker-src 'self'; font-src 'self'; object-src 'none'; base-uri 'none'; form-action 'none'">
+<title>相遇图鉴</title>
+<meta name="description" content="把日常里遇到的宝可梦拍下来，收进自己的图鉴。">
+<meta name="apple-mobile-web-app-capable" content="yes">
+<meta name="mobile-web-app-capable" content="yes">
+<meta name="apple-mobile-web-app-title" content="相遇图鉴">
+<meta name="apple-mobile-web-app-status-bar-style" content="black-translucent">
+<meta name="theme-color" content="#0d111b">
+<meta name="format-detection" content="telephone=no">
+<link rel="manifest" href="manifest.webmanifest">
+<link rel="apple-touch-icon" href="icon-180.png">
+<link rel="icon" type="image/png" href="favicon-32.png">
+<link rel="stylesheet" href="styles.css">
+</head>
+<body>
+<!-- the machine: shell behind everything, the glass of its screen, the deck above the screen -->
+<div class="shellbg" aria-hidden="true"></div>
+<div class="glass" aria-hidden="true"></div>
+<div class="deck" id="deck" aria-hidden="true">
+  <span class="plate"><svg class="plate-mark" viewBox="0 0 28 28" fill="none" stroke="currentColor" stroke-width="2.8" stroke-linecap="round" stroke-linejoin="round"><path d="M3 9V5.500A2.500 2.500 0 0 1 5.500 3H9M19 3h3.500A2.500 2.500 0 0 1 25 5.500V9M25 19v3.500A2.500 2.500 0 0 1 22.500 25H19M9 25H5.500A2.500 2.500 0 0 1 3 22.500V19"/><path class="spark" d="M14 7.500l1.900 4.600 4.600 1.900-4.600 1.900L14 20.500l-1.900-4.600-4.600-1.900 4.600-1.900z"/></svg></span>
+  <span class="brandt"><b>相遇图鉴</b><i>ENCOUNTER DEX</i></span>
+  <span class="lcd"><i class="lamp" id="lamp"></i><span class="lcd-n" id="lcdN">0000</span><span class="lcd-d">/1025</span></span>
+</div>
+
+<header class="top" id="top"></header>
+<main id="view" tabindex="-1"></main>
+
+<nav class="tabbar" id="tabbar" aria-label="主导航">
+  <button class="tab" data-act="tab" data-tab="home" aria-label="首页"><span class="kc"><svg class="ic" viewBox="0 0 24 24" aria-hidden="true"><path d="M4 11.200 12 4l8 7.200V19a1 1 0 0 1-1 1h-4.500v-5.500h-5V20H5a1 1 0 0 1-1-1z"/></svg></span><span class="kl">首页</span></button>
+  <button class="tab" data-act="tab" data-tab="mine" aria-label="我的图鉴"><span class="kc"><svg class="ic" viewBox="0 0 24 24" aria-hidden="true"><path d="M5 4.500h11.500A2.500 2.500 0 0 1 19 7v12.500H7.500A2.500 2.500 0 0 1 5 17z"/><path d="M5 17a2.500 2.500 0 0 1 2.500-2.500H19"/><path d="M9 8.500h6"/></svg></span><span class="kl">我的</span></button>
+  <button class="tab tab-cam" data-act="cam-open" aria-label="拍照记录"><span class="kc big fab"><svg class="ic" viewBox="0 0 24 24" aria-hidden="true"><path d="M4 8V5.500A1.500 1.500 0 0 1 5.500 4H8M16 4h2.500A1.500 1.500 0 0 1 20 5.500V8M20 16v2.500a1.500 1.500 0 0 1-1.500 1.500H16M8 20H5.500A1.500 1.500 0 0 1 4 18.500V16"/><circle cx="12" cy="12" r="3.200"/></svg></span><span class="kl">扫描</span></button>
+  <button class="tab" data-act="tab" data-tab="all" aria-label="全国图鉴"><span class="kc"><svg class="ic" viewBox="0 0 24 24" aria-hidden="true"><rect x="4" y="4" width="6.500" height="6.500" rx="1.500"/><rect x="13.500" y="4" width="6.500" height="6.500" rx="1.500"/><rect x="4" y="13.500" width="6.500" height="6.500" rx="1.500"/><rect x="13.500" y="13.500" width="6.500" height="6.500" rx="1.500"/></svg></span><span class="kl">全国</span></button>
+  <button class="tab" data-act="tab" data-tab="prefs" aria-label="设置"><span class="kc"><svg class="ic" viewBox="0 0 24 24" aria-hidden="true"><circle cx="12" cy="12" r="3"/><path d="M12 3.500v2.200M12 18.300v2.200M3.500 12h2.200M18.300 12h2.200M6 6l1.600 1.600M16.400 16.400 18 18M18 6l-1.600 1.600M7.600 16.400 6 18"/></svg></span><span class="kl">设置</span></button>
+</nav>
+
+<div class="sheet-host" id="sheetHost" hidden></div>
+
+<section class="cam" id="cam" hidden aria-label="拍照记录"></section>
+
+<div class="toast" id="toast" role="status" aria-live="polite" hidden></div>
+
+<!-- over the screen: scan lines, then the frame around the glass -->
+<div class="fx" aria-hidden="true"></div>
+<div class="bezel" aria-hidden="true"></div>
+
+<input type="file" id="fileAlbum" accept="image/*" hidden>
+<input type="file" id="fileCamera" accept="image/*" capture="environment" hidden>
+<input type="file" id="fileBackup" accept=".zip,application/zip" hidden>
+
+<noscript><p class="nojs">这个页面需要开启 JavaScript 才能使用。</p></noscript>
+<script src="dex.js"></script>
+<script src="core.js"></script>
+<script src="recog.js"></script>
+<script src="app.js"></script>
+</body>
+</html>
